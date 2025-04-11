@@ -4,6 +4,8 @@ const BOARD_WIDTH = 20;
 const BOARD_HEIGHT = 15;
 const BOMBS_COUNT = 30;
 
+const BOARD_SIZE = BOARD_WIDTH * BOARD_HEIGHT;
+
 // состояние игры
 const GAME_STATE = {
     PLAY: 0,
@@ -31,7 +33,7 @@ export default {
             board: ref([]),
 
             //проверяем, чтобы бомб было не больше, чем клеток на поле
-            bombsCount: BOMBS_COUNT > BOARD_WIDTH * BOARD_HEIGHT ? BOARD_WIDTH * BOARD_HEIGHT : BOMBS_COUNT,
+            bombsCount: BOMBS_COUNT > BOARD_SIZE ? BOARD_SIZE : BOMBS_COUNT,
             openedCellsCount: 0,
 
             // нужно, чтобы константы были доступны в html
@@ -121,7 +123,7 @@ export default {
             }
 
             // Если открыты все клетки, кроме бомб, то завершаем игру (победа)
-            this.openedCellsCount >= BOARD_WIDTH * BOARD_HEIGHT - this.bombsCount && (this.gameState = GAME_STATE.WIN);
+            this.openedCellsCount >= BOARD_SIZE - this.bombsCount && (this.gameState = GAME_STATE.WIN);
         },
 
         toggleFlag(cell) {
