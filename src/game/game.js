@@ -32,8 +32,8 @@ export default {
             gameState: ref(GAME_STATE.PLAY), // ref - реактивная переменная
             board: ref([]),
 
-            //проверяем, чтобы бомб было не больше, чем клеток на поле
-            bombsCount: BOMBS_COUNT > BOARD_SIZE ? BOARD_SIZE : BOMBS_COUNT,
+            // бомб не может быть больше, чем клеток на поле
+            bombsCount: Math.min(BOMBS_COUNT, BOARD_SIZE),
             openedCellsCount: 0,
 
             // нужно, чтобы константы были доступны в html
