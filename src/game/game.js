@@ -29,7 +29,6 @@ export default {
         return {
             gameState: ref(GAME_STATE.PLAY), // ref - реактивная переменная
             board: ref([]),
-            flagsCount: ref(0), // счетчик выставленных флагов
 
             //проверяем, чтобы бомб было не больше, чем клеток на поле
             bombsCount: BOMBS_COUNT > BOARD_WIDTH * BOARD_HEIGHT ? BOARD_WIDTH * BOARD_HEIGHT : BOMBS_COUNT,
@@ -50,7 +49,6 @@ export default {
     methods: {
         resetGame() {
             this.gameState = GAME_STATE.PLAY;
-            this.flagsCount = 0;
             this.openedCellsCount = 0;
 
             this.board = [];
@@ -127,7 +125,6 @@ export default {
 
         toggleFlag(cell) {
             cell.state = !cell.state * 1;
-            this.flagsCount += cell.state ? 1 : -1;
         }
     }
 }
