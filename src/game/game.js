@@ -121,7 +121,7 @@ export default {
             }
 
             // Если открыты все клетки, кроме бомб, то завершаем игру (победа)
-            this.openedCellsCount >= BOARD_WIDTH * BOARD_HEIGHT - BOMBS_COUNT && (this.gameState = GAME_STATE.WIN);
+            this.openedCellsCount >= BOARD_WIDTH * BOARD_HEIGHT - this.bombsCount && (this.gameState = GAME_STATE.WIN);
         },
 
         toggleFlag(cell) {
