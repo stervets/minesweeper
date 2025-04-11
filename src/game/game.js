@@ -1,10 +1,16 @@
 import {ref} from "vue";
 
+/////////// Параметры игры /////////
 const BOARD_WIDTH = 20;
 const BOARD_HEIGHT = 15;
 const BOMBS_COUNT = 30;
+////////////////////////////////////
 
+// общее количество клеток
 const BOARD_SIZE = BOARD_WIDTH * BOARD_HEIGHT;
+
+// бомб не может быть больше, чем клеток на поле
+const BOMBS_VALIDATED_COUNT = Math.min(BOMBS_COUNT, BOARD_SIZE);
 
 // состояние игры
 const GAME_STATE = {
@@ -32,9 +38,7 @@ export default {
             gameState: ref(GAME_STATE.PLAY), // ref - реактивная переменная
             board: ref([]),
 
-            // бомб не может быть больше, чем клеток на поле
-            bombsCount: Math.min(BOMBS_COUNT, BOARD_SIZE),
-            openedCellsCount: 0,
+            openedCellsCount: 0, // счетчик открытых клеток (нужно для определения победы)
 
             // нужно, чтобы константы были доступны в html
             CELL_STATE,
@@ -70,7 +74,7 @@ export default {
             }
 
             // расставляем бомбы
-            let bombsToPlace = this.bombsCount;
+            let bombsToPlace = BOMBS_VALIDATED_COUNT;
             while (bombsToPlace > 0) {
                 const x = random(0, BOARD_WIDTH - 1);
                 const y = random(0, BOARD_HEIGHT - 1);
@@ -93,7 +97,7 @@ export default {
             });
         },
 
-        openCell(cell){
+        openCell(cell) {
             cell.state = CELL_STATE.OPENED;
             this.openedCellsCount++;
         },
@@ -123,7 +127,7 @@ export default {
             }
 
             // Если открыты все клетки, кроме бомб, то завершаем игру (победа)
-            this.openedCellsCount >= BOARD_SIZE - this.bombsCount && (this.gameState = GAME_STATE.WIN);
+            this.openedCellsCount >= BOARD_SIZE - BOMBS_VALIDATED_COUNT && (this.gameState = GAME_STATE.WIN);
         },
 
         toggleFlag(cell) {
