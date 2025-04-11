@@ -70,14 +70,13 @@ export default {
             }
 
             // расставляем бомбы
-            for (let i = 0; i < this.bombsCount; i++) {
-                while (true) {
-                    const x = random(0, BOARD_WIDTH - 1);
-                    const y = random(0, BOARD_HEIGHT - 1);
-                    if (!this.board[y][x].value) {
-                        this.board[y][x].value = MINED_CELL;
-                        break;
-                    }
+            let bombsToPlace = this.bombsCount;
+            while (bombsToPlace > 0) {
+                const x = random(0, BOARD_WIDTH - 1);
+                const y = random(0, BOARD_HEIGHT - 1);
+                if (!this.board[y][x].value) {
+                    this.board[y][x].value = MINED_CELL;
+                    bombsToPlace--;
                 }
             }
 
