@@ -93,14 +93,19 @@ export default {
             });
         },
 
+        setCellStateOpened(cell){
+            cell.state = CELL_STATE.OPENED;
+            this.openedCellsCount++;
+        },
+
         openCell(cell) {
+            // Если в клетке бомба, то завершаем игру (проигрыш)
             if (cell.value === MINED_CELL) {
                 this.gameState = GAME_STATE.LOSE;
                 return;
             }
 
-            cell.state = CELL_STATE.OPENED;
-            this.openedCellsCount++;
+            this.setCellStateOpened(cell); // открываем клетку
 
             //если клетка пустая, то надо открыть окружающие клетки
             if (!cell.value) {
@@ -108,18 +113,15 @@ export default {
                     for (let y = cell.y - 1; y <= cell.y + 1; y++) {
                         const nextCell = this.board[y]?.[x];
                         if (nextCell && nextCell.state < CELL_STATE.OPENED) {
-                            if (nextCell.value) {
-                                nextCell.state = CELL_STATE.OPENED;
-                                this.openedCellsCount++;
-                            } else {
-                                //если клетка в окружении тоже пустая, то надо открыть и её окружающие клетки
-                                this.openCell(nextCell);
-                            }
+                            // Если клетка в окружении не пустая, то открываем её
+                            // Если клетка в окружении пустая, то надо открыть и её окружающие клетки
+                            nextCell.value ? this.setCellStateOpened(nextCell) : this.openCell(nextCell);
                         }
                     }
                 }
             }
 
+            // Если открыты все клетки, кроме бомб, то завершаем игру (победа)
             this.openedCellsCount >= BOARD_WIDTH * BOARD_HEIGHT - BOMBS_COUNT && (this.gameState = GAME_STATE.WIN);
         },
 
