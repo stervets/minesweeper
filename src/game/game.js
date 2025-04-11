@@ -10,7 +10,7 @@ const BOMBS_COUNT = 30;
 const BOARD_SIZE = BOARD_WIDTH * BOARD_HEIGHT;
 
 // бомб не может быть больше, чем клеток на поле
-const BOMBS_VALIDATED_COUNT = Math.min(BOMBS_COUNT, BOARD_SIZE);
+const VALIDATED_BOMBS_COUNT = Math.min(BOMBS_COUNT, BOARD_SIZE);
 
 // состояние игры
 const GAME_STATE = {
@@ -74,7 +74,7 @@ export default {
             }
 
             // расставляем бомбы
-            let bombsToPlace = BOMBS_VALIDATED_COUNT;
+            let bombsToPlace = VALIDATED_BOMBS_COUNT;
             while (bombsToPlace > 0) {
                 const x = random(0, BOARD_WIDTH - 1);
                 const y = random(0, BOARD_HEIGHT - 1);
@@ -127,7 +127,7 @@ export default {
             }
 
             // Если открыты все клетки, кроме бомб, то завершаем игру (победа)
-            this.openedCellsCount >= BOARD_SIZE - BOMBS_VALIDATED_COUNT && (this.gameState = GAME_STATE.WIN);
+            this.openedCellsCount >= BOARD_SIZE - VALIDATED_BOMBS_COUNT && (this.gameState = GAME_STATE.WIN);
         },
 
         toggleFlag(cell) {
