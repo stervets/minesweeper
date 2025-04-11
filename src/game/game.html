@@ -17,7 +17,7 @@
         <div v-for="row in board" class="row">
             <div v-for="cell in row" class="cell">
                 <span
-                      v-if="gameState === GAME_STATE.PLAY && (cell.state === CELL_STATE.CLOSED || cell.state === CELL_STATE.FLAGGED)"
+                      v-if="gameState === GAME_STATE.PLAY && cell.state < CELL_STATE.OPENED"
                       @click="openCell(cell)"
                       @contextmenu.prevent="toggleFlag(cell)"
                       class="closed"
