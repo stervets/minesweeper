@@ -13,6 +13,10 @@ h1 {
       color: #16e382;
     }
 
+    .controls .state.win {
+      display: block;
+    }
+
     .board {
       .cell {
         background-color: #252A25;
@@ -23,6 +27,10 @@ h1 {
   &.lose {
     h1 {
       color: #fa6060;
+    }
+
+    .controls .state.lose {
+      display: block;
     }
 
     .board {
@@ -124,10 +132,12 @@ h1 {
 
     &.win {
       color: #16e382;
+      display: none;
     }
 
     &.lose {
       color: #fa6060;
+      display: none;
     }
   }
 }

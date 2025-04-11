@@ -5,8 +5,8 @@
     <h1>MineSweeper</h1>
     <div class="controls">
         <button @click="resetGame">New Game</button>
-        <div v-if="gameState === GAME_STATE.WIN" class="state win">WIN!</div>
-        <div v-if="gameState === GAME_STATE.LOSE" class="state lose">LOSE...</div>
+        <div class="state win">WIN!</div>
+        <div class="state lose">LOSE...</div>
     </div>
 
     <div class="board" @contextmenu.prevent>
