@@ -56,13 +56,15 @@ export default {
             this.board = [];
             // первым делом формируем массив с клетками
             for (let y = 0; y < BOARD_HEIGHT; y++) {
+                // создаём строку
                 this.board.push([]);
                 const row = this.board.at(-1);
                 for (let x = 0; x < BOARD_WIDTH; x++) {
+                    // создаём клетку
                     row.push({
-                        x, y,
-                        value: 0,
-                        state: CELL_STATE.CLOSED
+                        x, y, // координаты клетки
+                        value: 0, // число окружающих бомб. 10 (MINED_CELL) означает, что в клетке бомба
+                        state: CELL_STATE.CLOSED // состояние клетки
                     });
                 }
             }
