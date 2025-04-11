@@ -91,19 +91,20 @@ export default {
             });
         },
 
-        setCellStateOpened(cell){
+        openCell(cell){
             cell.state = CELL_STATE.OPENED;
             this.openedCellsCount++;
         },
 
-        openCell(cell) {
+        // Обработчик клика по клетке
+        onCellClick(cell) {
             // Если в клетке бомба, то завершаем игру (проигрыш)
             if (cell.value === MINED_CELL) {
                 this.gameState = GAME_STATE.LOSE;
                 return;
             }
 
-            this.setCellStateOpened(cell); // открываем клетку
+            this.openCell(cell); // открываем клетку
 
             //если клетка пустая, то надо открыть окружающие клетки
             if (!cell.value) {
@@ -113,7 +114,7 @@ export default {
                         if (nextCell && nextCell.state < CELL_STATE.OPENED) {
                             // Если клетка в окружении не пустая, то открываем её
                             // Если клетка в окружении пустая, то надо открыть и её окружающие клетки
-                            nextCell.value ? this.setCellStateOpened(nextCell) : this.openCell(nextCell);
+                            nextCell.value ? this.openCell(nextCell) : this.onCellClick(nextCell);
                         }
                     }
                 }

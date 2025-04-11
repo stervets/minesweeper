@@ -14,7 +14,7 @@
             <div v-for="cell in row" class="cell">
                 <span
                       v-if="gameState === GAME_STATE.PLAY && cell.state < CELL_STATE.OPENED"
-                      @click="openCell(cell)"
+                      @click="onCellClick(cell)"
                       @contextmenu.prevent="toggleFlag(cell)"
                       class="closed"
                 >
