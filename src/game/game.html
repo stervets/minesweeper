@@ -22,7 +22,7 @@
                 </span>
 
                 <span v-else :class="`cell-${cell.value}`">
-                    {{cell.value ? (cell.value === MINED_CELL ? '💣' : cell.value) : ''}}
+                    {{cell.value && (cell.value === MINED_CELL ? '💣' : cell.value) || ''}}
                 </span>
             </div>
         </div>
