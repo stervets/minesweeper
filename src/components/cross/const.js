@@ -1,14 +1,12 @@
 /////////// Параметры игры /////////
-export const BOARD_WIDTH = 20;
-export const BOARD_HEIGHT = 15;
-const BOMBS_COUNT = 30;
+export const BOARD_WIDTH = 10;
+export const BOARD_HEIGHT = 10;
 ////////////////////////////////////
+
+export const OPENED_CELLS_PERCENT = 50;
 
 // общее количество клеток
 export const BOARD_SIZE = BOARD_WIDTH * BOARD_HEIGHT;
-
-// бомб не может быть больше, чем клеток на поле
-export const VALIDATED_BOMBS_COUNT = Math.min(BOMBS_COUNT, BOARD_SIZE);
 
 // состояние игры
 export const GAME_STATE = {
@@ -24,4 +22,5 @@ export const CELL_STATE = {
     OPENED: 2 // клетка открыта
 }
 
-export const MINED_CELL = 10; // признак заминированной клетки
+export const MINED_CELL = 10;
+export const EMPTY_CELL = 11;

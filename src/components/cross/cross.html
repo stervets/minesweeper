@@ -5,28 +5,35 @@
     <h1>Cross</h1>
     <div class="controls">
         <button @click="resetGame">New Game</button>
+        <div>Mines: {{ bombsCount }}</div>
+        <div>Flags: {{ flagsCount }}</div>
         <div class="state win">WIN!</div>
         <div class="state lose">LOSE...</div>
     </div>
 
     <div class="board" @contextmenu.prevent>
+        <div class="row">
+            <div class="cell axis"><span></span></div>
+            <div v-for="cell in board[0]" class="cell axis"><span>{{ getBombsCountInCol(cell) }}</span></div>
+        </div>
         <div v-for="row in board" class="row">
+            <div class="cell axis"><span>{{ getBombsCountInRow(row[0]) }}</span></div>
             <div v-for="cell in row" class="cell">
                 <span
-                      v-if="gameState === GAME_STATE.PLAY && cell.state < CELL_STATE.OPENED"
-                      @click="onCellClick(cell)"
-                      @contextmenu.prevent="toggleFlag(cell)"
-                      class="closed"
+                        v-if="gameState === GAME_STATE.PLAY && cell.state < CELL_STATE.OPENED"
+                        @click="onCellClick(cell)"
+                        @contextmenu.prevent="toggleFlag(cell)"
+                        class="closed"
                 >
-                    {{cell.state === CELL_STATE.FLAGGED ? '🚩' : ''}}
+                    {{ cell.state === CELL_STATE.FLAGGED ? '🚩' : '' }}
                 </span>
 
                 <span v-else :class="`cell-${cell.value}`">
-                    {{cell.value && (cell.value === MINED_CELL ? '💣' : cell.value) || ''}}
+                    <template v-if="cell.value < EMPTY_CELL">
+                        {{ cell.value && (cell.value === MINED_CELL ? '💣' : cell.value) || '' }}
+                    </template>
                 </span>
             </div>
         </div>
     </div>
-
-    <Hex/>
 </div>

@@ -3,11 +3,12 @@ import {ref} from "vue";
 import {
     BOARD_WIDTH,
     BOARD_HEIGHT,
-    VALIDATED_BOMBS_COUNT,
     BOARD_SIZE,
     CELL_STATE,
     GAME_STATE,
-    MINED_CELL
+    MINED_CELL,
+    OPENED_CELLS_PERCENT,
+    EMPTY_CELL
 } from "./const";
 import {random} from "../../utils";
 
@@ -16,12 +17,15 @@ export default {
         return {
             gameState: ref(GAME_STATE.PLAY),
             board: ref([]),
+            bombsCount: ref(0),
+            flagsCount: ref(0),
 
             openedCellsCount: 0,
 
             CELL_STATE,
             GAME_STATE,
-            MINED_CELL
+            MINED_CELL,
+            EMPTY_CELL
         };
     },
 
@@ -30,44 +34,103 @@ export default {
     },
 
     methods: {
+        sorter(a, b) {
+            return b-a;
+        },
+
+        getBombsCountInCol(cell) {
+            const sums = [];
+            this.board.reduce((prevCellIsMined, row) => {
+                const isMinedCell = row[cell.x].value === MINED_CELL;
+                !prevCellIsMined && sums.unshift(0);
+                isMinedCell && sums[0]++;
+                return isMinedCell;
+            }, false);
+            return sums.sort(this.sorter)[0];
+        },
+
+        getBombsCountInRow(cell) {
+            const sums = [];
+            this.board[cell.y].reduce((prevCellIsMined, cell) => {
+                const isMinedCell = cell.value === MINED_CELL;
+                !prevCellIsMined && sums.unshift(0);
+                isMinedCell && sums[0]++;
+                return isMinedCell;
+            }, false);
+            return sums.sort(this.sorter)[0];
+
+            // return this.board[cell.y].reduce((res, cell) => {
+            //     return res + (cell.value === MINED_CELL) * 1;
+            // }, 0);
+        },
+
+        forEachCell(onEveryRow, onEveryCell) {
+            for (let y = 0; y < BOARD_HEIGHT; y++) {
+                if (onEveryRow && !onEveryRow(y, this.board[y])) return false;
+                for (let x = 0; x < BOARD_WIDTH; x++) {
+                    if (onEveryCell && !onEveryCell(x, y, this.board[y], this.board[y]?.[x])) return false;
+                }
+            }
+            return true;
+        },
+
+        hasEmptyCell() {
+            return !this.forEachCell(null, (x, y, row, cell) => cell.value);
+        },
+
         resetGame() {
+            this.bombsCount = 0;
+            this.flagsCount = 0;
             this.gameState = GAME_STATE.PLAY;
             this.openedCellsCount = 0;
 
             this.board = [];
-            for (let y = 0; y < BOARD_HEIGHT; y++) {
-                this.board.push([]);
-                const row = this.board.at(-1);
-                for (let x = 0; x < BOARD_WIDTH; x++) {
-                    // создаём клетку
-                    row.push({
-                        x, y,
-                        value: 0,
-                        state: CELL_STATE.OPENED
-                    });
-                }
-            }
 
-            let bombsToPlace = VALIDATED_BOMBS_COUNT;
-            while (bombsToPlace > 0) {
+            // init board
+            this.forEachCell(
+                () => this.board.push([]),
+                (x, y, row) => row.push({
+                    x, y,
+                    value: 0,
+                    state: CELL_STATE.CLOSED
+                })
+            );
+
+            while (this.hasEmptyCell()) {
                 const x = random(0, BOARD_WIDTH - 1);
                 const y = random(0, BOARD_HEIGHT - 1);
-                if (!this.board[y][x].value) {
-                    this.board[y][x].value = MINED_CELL;
-                    bombsToPlace--;
+                const cell = this.board[y][x];
+                if (cell.value < MINED_CELL) {
+                    if (random(0, 2)) {
+                        cell.value = MINED_CELL;
+                        this.bombsCount++;
+
+                        for (let x = cell.x - 1; x <= cell.x + 1; x++) {
+                            for (let y = cell.y - 1; y <= cell.y + 1; y++) {
+                                const nextCell = this.board[y]?.[x];
+                                nextCell &&
+                                nextCell.value < MINED_CELL && nextCell.value++;
+                            }
+                        }
+                    } else {
+                        cell.value = EMPTY_CELL;
+                        cell.state = CELL_STATE.OPENED;
+                        this.bombsCount++;
+                        this.flagsCount++;
+                    }
                 }
             }
 
-            this.board.forEach((row) => {
-                row.forEach((cell) => {
-                    if (cell.value === MINED_CELL) return;
-                    for (let x = cell.x - 1; x <= cell.x + 1; x++) {
-                        for (let y = cell.y - 1; y <= cell.y + 1; y++) {
-                            this.board[y]?.[x]?.value === MINED_CELL && cell.value++;
-                        }
-                    }
-                });
-            });
+            let cellsToOpen = (BOARD_SIZE - this.bombsCount) / 100 * OPENED_CELLS_PERCENT;
+            while (cellsToOpen > 0) {
+                const x = random(0, BOARD_WIDTH - 1);
+                const y = random(0, BOARD_HEIGHT - 1);
+                const cell = this.board[y][x];
+                if (cell.value !== MINED_CELL) {
+                    cell.state = CELL_STATE.OPENED;
+                    cellsToOpen--;
+                }
+            }
         },
 
         openCell(cell) {
@@ -94,11 +157,12 @@ export default {
                 }
             }
 
-            this.openedCellsCount >= BOARD_SIZE - VALIDATED_BOMBS_COUNT && (this.gameState = GAME_STATE.WIN);
+            this.openedCellsCount >= BOARD_SIZE - this.bombsCount && (this.gameState = GAME_STATE.WIN);
         },
 
         toggleFlag(cell) {
             cell.state = !cell.state * 1;
+            this.flagsCount += cell.state ? 1 : -1;
         }
     }
 }
