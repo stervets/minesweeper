@@ -38,7 +38,7 @@ export default {
             return b-a;
         },
 
-        getBombsCountInCol(cell) {
+        getBombsSeriesInCol(cell) {
             const sums = [];
             this.board.reduce((prevCellIsMined, row) => {
                 const isMinedCell = row[cell.x].value === MINED_CELL;
@@ -49,7 +49,7 @@ export default {
             return sums.sort(this.sorter)[0];
         },
 
-        getBombsCountInRow(cell) {
+        getBombsSeriesInRow(cell) {
             const sums = [];
             this.board[cell.y].reduce((prevCellIsMined, cell) => {
                 const isMinedCell = cell.value === MINED_CELL;
@@ -62,6 +62,18 @@ export default {
             // return this.board[cell.y].reduce((res, cell) => {
             //     return res + (cell.value === MINED_CELL) * 1;
             // }, 0);
+        },
+
+        getBombsCountInCol(cell) {
+            return this.board.reduce((res, row) => {
+                return res + (row[cell.x].value === MINED_CELL) * 1;
+            }, 0);
+        },
+
+        getBombsCountInRow(cell) {
+            return this.board[cell.y].reduce((res, cell) => {
+                return res + (cell.value === MINED_CELL) * 1;
+            }, 0);
         },
 
         forEachCell(onEveryRow, onEveryCell) {
@@ -122,12 +134,14 @@ export default {
             }
 
             let cellsToOpen = (BOARD_SIZE - this.bombsCount) / 100 * OPENED_CELLS_PERCENT;
+            //let cellsToOpen = BOARD_SIZE - this.bombsCount;
             while (cellsToOpen > 0) {
                 const x = random(0, BOARD_WIDTH - 1);
                 const y = random(0, BOARD_HEIGHT - 1);
                 const cell = this.board[y][x];
                 if (cell.value !== MINED_CELL) {
-                    cell.state = CELL_STATE.OPENED;
+                    //cell.state = CELL_STATE.OPENED;
+                    this.openCell(cell);
                     cellsToOpen--;
                 }
             }
@@ -157,12 +171,19 @@ export default {
                 }
             }
 
-            this.openedCellsCount >= BOARD_SIZE - this.bombsCount && (this.gameState = GAME_STATE.WIN);
+            this.checkIsWin();
+        },
+
+        checkIsWin(){
+            this.openedCellsCount >= BOARD_SIZE - this.bombsCount &&
+            this.flagsCount >= this.bombsCount &&
+            (this.gameState = GAME_STATE.WIN);
         },
 
         toggleFlag(cell) {
             cell.state = !cell.state * 1;
             this.flagsCount += cell.state ? 1 : -1;
+            this.checkIsWin();
         }
     }
 }

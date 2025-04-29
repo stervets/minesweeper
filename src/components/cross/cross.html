@@ -14,10 +14,17 @@
     <div class="board" @contextmenu.prevent>
         <div class="row">
             <div class="cell axis"><span></span></div>
+            <div class="cell axis"><span></span></div>
             <div v-for="cell in board[0]" class="cell axis"><span>{{ getBombsCountInCol(cell) }}</span></div>
+        </div>
+        <div class="row">
+            <div class="cell axis series"><span></span></div>
+            <div class="cell axis series"><span></span></div>
+            <div v-for="cell in board[0]" class="cell axis series"><span>{{ getBombsSeriesInCol(cell) }}</span></div>
         </div>
         <div v-for="row in board" class="row">
             <div class="cell axis"><span>{{ getBombsCountInRow(row[0]) }}</span></div>
+            <div class="cell axis series"><span>{{ getBombsSeriesInRow(row[0]) }}</span></div>
             <div v-for="cell in row" class="cell">
                 <span
                         v-if="gameState === GAME_STATE.PLAY && cell.state < CELL_STATE.OPENED"
